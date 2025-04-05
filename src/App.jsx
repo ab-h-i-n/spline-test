@@ -6,18 +6,24 @@ mapboxgl.accessToken =
   "pk.eyJ1IjoiYWJoaW4yazMiLCJhIjoiY20wbWh5ZHFwMDJwcjJqcHVjM3kyZjZlNyJ9.cagUWYMuMzLdJQhMbYB50A";
 
 export default function App() {
-
   const initializeMap = (center) => {
     const map = new mapboxgl.Map({
       container: "map",
       style: "mapbox://styles/abhin2k3/cm949rnw2009k01skcywm19gm?optimize=true",
       zoom: 18,
-      center : center,
+      center: center,
       antialias: true,
     });
 
     map.on("load", () => {
       geolocate.trigger();
+      map.flyTo({
+        center: center,
+        zoom: 21,
+        bearing: -35.9,
+        pitch: 65.48,
+        essential: true,
+      });
     });
 
     const geolocate = new mapboxgl.GeolocateControl({
@@ -25,7 +31,7 @@ export default function App() {
         zoom: 20,
         bearing: -35.9,
         pitch: 65.48,
-        center : center,
+        center: center,
         duration: 2000,
       },
       positionOptions: {
@@ -43,21 +49,12 @@ export default function App() {
       const { coords } = e;
       const userCoordinate = [coords.longitude, coords.latitude];
 
-      map.flyTo({
-        center: userCoordinate,
-        zoom: 21,
-        bearing: -35.9,
-        pitch: 65.48,
-        essential: true,
-      });
-
       placeUserModel(map, userCoordinate);
-
     });
-
   };
 
   const placeUserModel = (map, center) => {
+  
     map.addLayer({
       id: "custom-threebox-model",
       type: "custom",
@@ -100,9 +97,11 @@ export default function App() {
       },
       (error) => {
         console.error("Error getting location:", error);
-      },
-      { enableHighAccuracy: true }
+      }
     );
+
+    console.log("Mapbox GL JS version:", mapboxgl.version);
+    
   }, []);
 
   return <main id="map" style={{ width: "100%", height: "100vh" }} />;
