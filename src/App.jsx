@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import mapboxgl from "mapbox-gl";
 import { Threebox } from "threebox-plugin";
+import toast from "react-hot-toast";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoiYWJoaW4yazMiLCJhIjoiY20wbWh5ZHFwMDJwcjJqcHVjM3kyZjZlNyJ9.cagUWYMuMzLdJQhMbYB50A";
@@ -45,14 +46,17 @@ export default function App() {
     geolocate.on("geolocate", (e) => {
       const { coords } = e;
       const userCoordinate = [coords.longitude, coords.latitude];
-
+      toast.success(
+        `Location updated: ${coords.latitude}, ${coords.longitude}`
+      );
       placeUserModel(map, userCoordinate);
     });
+
+    
   };
 
   const placeUserModel = (map, center) => {
-
-    if(map.getLayer("custom-threebox-model")) {
+    if (map.getLayer("custom-threebox-model")) {
       return;
     }
 
@@ -85,7 +89,6 @@ export default function App() {
         window.tb.update();
       },
     });
-
   };
 
   useEffect(() => {
@@ -97,11 +100,11 @@ export default function App() {
         initializeMap(userCoordinate);
       },
       (error) => {
-        console.error("Error getting location:", error);
+        toast.error(`Error getting location: ${error.message}`);
       }
     );
 
-    console.log("Mapbox GL JS version:", mapboxgl.version);
+    toast.success(`Mapbox GL JS version: ${mapboxgl.version}`);
   }, []);
 
   return <main id="map" style={{ width: "100%", height: "100vh" }} />;

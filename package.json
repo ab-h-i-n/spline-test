@@ -13,6 +13,7 @@
     "mapbox-gl": "^3.11.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.5.2",
     "three": "^0.175.0",
     "threebox-plugin": "^2.2.7"
   },
