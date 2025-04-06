@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import { Threebox } from "threebox-plugin";
 import toast from "react-hot-toast";
@@ -7,6 +7,9 @@ mapboxgl.accessToken =
   "pk.eyJ1IjoiYWJoaW4yazMiLCJhIjoiY20wbWh5ZHFwMDJwcjJqcHVjM3kyZjZlNyJ9.cagUWYMuMzLdJQhMbYB50A";
 
 export default function App() {
+
+  const loadingRef = useRef(null);
+
   const initializeMap = (center) => {
     const map = new mapboxgl.Map({
       container: "map",
@@ -16,7 +19,8 @@ export default function App() {
       antialias: true,
     });
 
-    map.on("load", () => {
+    map.on("style.load", () => {
+      loadingRef.current.remove();
       geolocate.trigger();
       map.flyTo({
         center: center,
@@ -35,13 +39,17 @@ export default function App() {
         center: center,
         duration: 2000,
       },
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
       trackUserLocation: true,
       showUserHeading: true,
       showAccuracyCircle: false,
     });
 
     map.addControl(geolocate);
-    geolocate.trigger();
+
+    // placeUserModel(map, center);
 
     geolocate.on("geolocate", (e) => {
       const { coords } = e;
@@ -49,21 +57,23 @@ export default function App() {
       toast.success(
         `Location updated: ${coords.latitude}, ${coords.longitude}`
       );
-      placeUserModel(map, userCoordinate);
+      placeUserModel(map, userCoordinate, true);
     });
-
-    
   };
 
-  const placeUserModel = (map, center) => {
-    if (map.getLayer("custom-threebox-model")) {
+  const placeUserModel = (map, center, isUpdate) => {
+    if (map.getLayer("userModel") && !isUpdate) {
       return;
+    }
+
+    if (map.getLayer("userModel") && isUpdate) {
+      map.removeLayer("userModel");
     }
 
     var userModel;
 
     map.addLayer({
-      id: "custom-threebox-model",
+      id: "userModel",
       type: "custom",
       renderingMode: "3d",
       onAdd: function (map, gl) {
@@ -107,5 +117,10 @@ export default function App() {
     toast.success(`Mapbox GL JS version: ${mapboxgl.version}`);
   }, []);
 
-  return <main id="map" style={{ width: "100%", height: "100vh" }} />;
+  return (
+    <>
+      <main id="map" style={{ width: "100%", height: "100vh" }} />
+      <div ref={loadingRef} className="loading">Loading...</div>
+    </>
+  );
 }
