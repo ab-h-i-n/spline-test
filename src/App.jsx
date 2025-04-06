@@ -51,35 +51,33 @@ export default function App() {
   };
 
   const placeUserModel = (map, center) => {
-    
-    if (map.getLayer("custom-threebox-model")) {
-      map.removeLayer("custom-threebox-model");
-      map.removeSource("custom-threebox-model");
+
+    if(map.getLayer("custom-threebox-model")) {
+      return;
     }
+
+    var userModel;
 
     map.addLayer({
       id: "custom-threebox-model",
       type: "custom",
       renderingMode: "3d",
-      onAdd: function () {
-        window.tb = new Threebox(map, map.getCanvas().getContext("webgl"), {
+      onAdd: function (map, gl) {
+        window.tb = new Threebox(map, gl, {
           defaultLights: true,
         });
 
-        const scale = 0.2;
         const options = {
           obj: "/animal_crossing_test/scene.gltf",
           type: "gltf",
-          scale: { x: scale, y: scale, z: scale },
-          anchor: "center",
+          scale: 0.2,
           units: "meters",
           rotation: { x: 90, y: -90, z: 0 },
         };
 
-        window.tb.loadObj(options, (model) => {
-          model.setCoords(center);
-          model.setRotation({ x: 0, y: 0, z: 241 });
-          window.tb.add(model);
+        tb.loadObj(options, (model) => {
+          userModel = model.setCoords(center);
+          tb.add(model);
         });
       },
 
