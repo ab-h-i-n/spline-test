@@ -34,9 +34,6 @@ export default function App() {
         center: center,
         duration: 2000,
       },
-      positionOptions: {
-        enableHighAccuracy: true,
-      },
       trackUserLocation: true,
       showUserHeading: true,
       showAccuracyCircle: false,
@@ -54,7 +51,12 @@ export default function App() {
   };
 
   const placeUserModel = (map, center) => {
-  
+    
+    if (map.getLayer("custom-threebox-model")) {
+      map.removeLayer("custom-threebox-model");
+      map.removeSource("custom-threebox-model");
+    }
+
     map.addLayer({
       id: "custom-threebox-model",
       type: "custom",
@@ -101,7 +103,6 @@ export default function App() {
     );
 
     console.log("Mapbox GL JS version:", mapboxgl.version);
-    
   }, []);
 
   return <main id="map" style={{ width: "100%", height: "100vh" }} />;
