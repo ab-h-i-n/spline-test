@@ -85,6 +85,7 @@ export default function App() {
         window.tb.update();
       },
     });
+
   };
 
   useEffect(() => {
